@@ -1,0 +1,804 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a5fa8;
+    --blue-light: #2d7dd2;
+    --blue-pale: #e8f1fb;
+    --teal: #0e8c8c;
+    --gold: #c8941a;
+    --text: #1a1a2e;
+    --muted: #5a6070;
+    --border: #c8d4e8;
+    --bg: #f4f7fc;
+    --white: #ffffff;
+    --red: #c0392b;
+    --radius: 8px;
+    --shadow: 0 2px 12px rgba(26,95,168,0.10);
+  }
+
+  #bap-root {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  .bap-header {
+    background: linear-gradient(135deg, var(--blue) 0%, #0d3d6e 100%);
+    color: white;
+    padding: 24px 32px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 4px solid var(--gold);
+  }
+
+  .bap-logo-box {
+    background: white;
+    border-radius: 10px;
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .bap-logo-box svg { width: 36px; height: 36px; }
+
+  .bap-header-text h1 {
+    font-size: 17px; font-weight: 700; letter-spacing: 0.2px;
+  }
+  .bap-header-text p {
+    font-size: 12px; opacity: 0.78; margin-top: 2px;
+  }
+
+  .bap-form-wrap {
+    max-width: 820px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+  }
+
+  .bap-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .bap-section-title {
+    background: var(--blue-pale);
+    border-left: 4px solid var(--blue);
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .bap-fields {
+    padding: 20px 20px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+  }
+
+  .bap-fields.single { grid-template-columns: 1fr; }
+  .bap-fields.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .bap-field { display: flex; flex-direction: column; gap: 5px; }
+  .bap-field.full { grid-column: 1 / -1; }
+
+  .bap-field label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .bap-field label span.req { color: var(--red); margin-left: 2px; }
+
+  .bap-field input,
+  .bap-field select,
+  .bap-field textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: #fafcff;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    width: 100%;
+    outline: none;
+  }
+
+  .bap-field input:focus,
+  .bap-field select:focus,
+  .bap-field textarea:focus {
+    border-color: var(--blue-light);
+    box-shadow: 0 0 0 3px rgba(45,125,210,0.12);
+    background: white;
+  }
+
+  .bap-field textarea { resize: vertical; min-height: 80px; }
+
+  .bap-field input[readonly] {
+    background: #eef3f9;
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .input-with-suffix {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .input-with-suffix input { flex: 1; }
+  .input-suffix {
+    font-size: 13px; color: var(--muted); white-space: nowrap; font-style: italic;
+  }
+
+  .sig-row {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .sig-block { display: flex; flex-direction: column; gap: 10px; }
+  .sig-block-title {
+    font-size: 11.5px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border); padding-bottom: 6px;
+  }
+
+  .sig-preview {
+    width: 100%; height: 80px;
+    border: 1.5px dashed var(--border);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fafcff;
+    overflow: hidden;
+    position: relative;
+  }
+  .sig-preview img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+  }
+  .sig-preview-placeholder {
+    font-size: 11px; color: #b0b8c8; text-align: center; padding: 8px;
+  }
+
+  .bap-actions {
+    display: flex; gap: 12px; justify-content: center;
+    padding: 8px 20px 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 11px 28px;
+    border: none; border-radius: 6px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.12s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-print { background: var(--teal); color: white; }
+  .btn-reset { background: #e8eaf0; color: var(--muted); }
+
+  .bap-output-wrap {
+    max-width: 820px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+    display: none;
+  }
+  .bap-output-wrap.visible { display: block; }
+
+  /* ===== DOCUMENT OUTPUT ===== */
+  @media screen {
+    .bap-doc {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 32px rgba(26,95,168,0.13);
+      padding: 48px 56px;
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+      border-top: 6px solid var(--gold);
+    }
+  }
+
+  .doc-deco-top {
+    display: flex; justify-content: center; margin-bottom: 20px;
+  }
+  .doc-deco-top svg { width: 320px; height: 18px; }
+
+  .doc-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+  }
+
+  .doc-title h2 {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    line-height: 1.2;
+  }
+  .doc-title p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .doc-logo {
+    background: var(--blue);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 18px; font-weight: 900;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    line-height: 1;
+    text-align: center;
+  }
+  .doc-logo span { font-size: 9px; display: block; font-weight: 400; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .doc-divider { border: none; border-top: 2px solid var(--blue-pale); margin: 16px 0; }
+
+  .doc-narasi {
+    font-size: 13.5px;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .doc-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .doc-table td:first-child {
+    font-weight: 600;
+    color: var(--muted);
+    width: 38%;
+    background: var(--blue-pale);
+  }
+
+  .doc-section { margin-bottom: 18px; }
+  .doc-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1.5px solid var(--blue-pale);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+  .doc-section-content {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  .doc-footer {
+    margin-top: 36px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .doc-footer-meta { margin-bottom: 28px; }
+
+  .doc-sig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 8px;
+  }
+
+  .doc-sig-col { text-align: center; }
+  .doc-sig-role {
+    font-weight: 700; font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .doc-sig-image-box {
+    height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 8px 0;
+  }
+  .doc-sig-image-box img { max-height: 80px; max-width: 160px; object-fit: contain; }
+  .doc-sig-line {
+    border-top: 1.5px solid var(--text);
+    margin: 0 auto 6px;
+    width: 80%;
+  }
+  .doc-sig-name { font-weight: 700; font-size: 13px; }
+
+  .doc-deco-bottom {
+    display: flex; justify-content: center; margin-top: 24px;
+  }
+
+  .output-actions {
+    display: flex; gap: 12px; justify-content: center; margin: 20px 0 8px;
+  }
+
+  .error-msg {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 3px;
+    display: none;
+  }
+
+  @media print {
+    #bap-root > *:not(.bap-output-wrap) { display: none !important; }
+    .bap-output-wrap { display: block !important; padding: 0; margin: 0; max-width: 100%; }
+    .output-actions { display: none !important; }
+    .bap-doc {
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 28px 40px !important;
+      margin: 0 !important;
+      border-top: none !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .bap-fields { grid-template-columns: 1fr; }
+    .bap-fields.triple { grid-template-columns: 1fr; }
+    .bap-header { padding: 16px; }
+    .bap-form-wrap, .bap-output-wrap { padding: 0 8px; }
+    .bap-doc { padding: 24px 16px; }
+    .sig-row { grid-template-columns: 1fr; }
+    .doc-sig-grid { grid-template-columns: 1fr; }
+    .doc-header { flex-direction: column; }
+  }
+</style>
+
+<div id="bap-root">
+
+  <!-- HEADER -->
+  <div class="bap-header">
+    <div class="bap-logo-box">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="8" fill="#1a5fa8"/>
+        <text x="6" y="27" font-family="Arial Black,Arial" font-size="18" font-weight="900" fill="white">bd</text>
+        <circle cx="34" cy="8" r="5" fill="#c8941a"/>
+      </svg>
+    </div>
+    <div class="bap-header-text">
+      <h1>Generator BAP Kontrak Perkuliahan</h1>
+      <p>Program Studi S1 Bisnis Digital &mdash; Fakultas Ilmu Sosial dan Ekonomi Kreatif</p>
+    </div>
+  </div>
+
+  <div class="bap-form-wrap">
+
+    <!-- SECTION 1: INFO PERKULIAHAN -->
+    <div class="bap-section">
+      <div class="bap-section-title">📋 Informasi Perkuliahan</div>
+      <div class="bap-fields">
+        <div class="bap-field">
+          <label>Tanggal BAP <span class="req">*</span></label>
+          <input type="date" id="f-tanggal">
+          <span class="error-msg" id="err-tanggal">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Tahun Akademik <span class="req">*</span></label>
+          <select id="f-tahun">
+            <option value="">— Pilih —</option>
+            <option value="Ganjil 2025/2026">Ganjil 2025/2026</option>
+            <option value="Genap 2025/2026" selected>Genap 2025/2026</option>
+            <option value="Ganjil 2026/2027">Ganjil 2026/2027</option>
+          </select>
+          <span class="error-msg" id="err-tahun">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Mata Kuliah <span class="req">*</span></label>
+          <input type="text" id="f-matkul" list="list-matkul" placeholder="Ketik atau pilih…" autocomplete="off">
+          <datalist id="list-matkul">
+            <option value="Design Thinking">
+            <option value="Data Science">
+            <option value="Metodologi Penelitian">
+            <option value="UI/UX Design">
+            <option value="Manajemen Proyek">
+          </datalist>
+          <span class="error-msg" id="err-matkul">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Semester <span class="req">*</span></label>
+          <select id="f-semester">
+            <option value="">— Pilih —</option>
+            <option value="1 (satu)">1 (satu)</option>
+            <option value="2 (dua)">2 (dua)</option>
+            <option value="3 (tiga)">3 (tiga)</option>
+            <option value="4 (empat)" selected>4 (empat)</option>
+            <option value="5 (lima)">5 (lima)</option>
+            <option value="6 (enam)">6 (enam)</option>
+            <option value="7 (tujuh)">7 (tujuh)</option>
+            <option value="8 (delapan)">8 (delapan)</option>
+          </select>
+          <span class="error-msg" id="err-semester">Wajib diisi</span>
+        </div>
+        <div class="bap-field full">
+          <label>Dosen Pengampu <span class="req">*</span></label>
+          <input type="text" id="f-dosen" list="list-dosen" placeholder="Ketik atau pilih…" autocomplete="off">
+          <datalist id="list-dosen">
+            <option value="Dian Putrawangsa, S.T., M.T.">
+            <option value="Muhammad Rizky Al Bukhori">
+            <option value="Ahmad Fauzi">
+            <option value="Siti Rahmawati">
+          </datalist>
+          <span class="error-msg" id="err-dosen">Wajib diisi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: KEHADIRAN -->
+    <div class="bap-section">
+      <div class="bap-section-title">👥 Data Kehadiran Mahasiswa</div>
+      <div class="bap-fields triple">
+        <div class="bap-field">
+          <label>Jumlah Mahasiswa <span class="req">*</span></label>
+          <input type="number" id="f-total" min="0" placeholder="0">
+          <span class="error-msg" id="err-total">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Jumlah Hadir <span class="req">*</span></label>
+          <input type="number" id="f-hadir" min="0" placeholder="0">
+          <span class="error-msg" id="err-hadir">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Jumlah Tidak Hadir</label>
+          <input type="number" id="f-tidakhadir" readonly placeholder="—" tabindex="-1">
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: KONTEN KONTRAK -->
+    <div class="bap-section">
+      <div class="bap-section-title">📝 Isi Kontrak Perkuliahan</div>
+      <div class="bap-fields single">
+        <div class="bap-field">
+          <label>RPS (URL)</label>
+          <input type="url" id="f-rps" placeholder="https://drive.google.com/…">
+        </div>
+        <div class="bap-field">
+          <label>Penilaian <span class="req">*</span></label>
+          <textarea id="f-penilaian" rows="3" placeholder="Contoh: Tugas 50%, Proposal Penelitian 20%, Laporan Akhir 30%"></textarea>
+          <span class="error-msg" id="err-penilaian">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Kehadiran <span class="req">*</span></label>
+          <textarea id="f-kehadiran" rows="3" placeholder="Contoh: Maksimal Ketidakhadiran: 3 Pertemuan dari 16 Pertemuan…"></textarea>
+          <span class="error-msg" id="err-kehadiran">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Keterlambatan (menit)</label>
+          <div class="input-with-suffix">
+            <input type="number" id="f-terlambat" min="0" placeholder="1">
+            <span class="input-suffix">menit</span>
+          </div>
+        </div>
+        <div class="bap-field">
+          <label>Integritas <span class="req">*</span></label>
+          <textarea id="f-integritas" rows="4" placeholder="Ketentuan integritas akademik…"></textarea>
+          <span class="error-msg" id="err-integritas">Wajib diisi</span>
+        </div>
+        <div class="bap-field">
+          <label>Konsekuensi Pelanggaran <span class="req">*</span></label>
+          <textarea id="f-konsekuensi" rows="3" placeholder="Konsekuensi atas pelanggaran kesepakatan…"></textarea>
+          <span class="error-msg" id="err-konsekuensi">Wajib diisi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: TANDA TANGAN -->
+    <div class="bap-section">
+      <div class="bap-section-title">✍️ Tanda Tangan</div>
+      <div class="bap-fields" style="padding-bottom:4px">
+        <div class="bap-field">
+          <label>Dibuat di (Kota)</label>
+          <input type="text" id="f-kota" placeholder="Padalarang" value="Padalarang">
+        </div>
+        <div class="bap-field">
+          <label>Tanggal TTD</label>
+          <input type="date" id="f-tanggal-ttd">
+        </div>
+      </div>
+      <div class="sig-row">
+        <div class="sig-block">
+          <div class="sig-block-title">Dosen Pengampu</div>
+          <div class="bap-field">
+            <label>Nama</label>
+            <input type="text" id="f-sig-dosen-nama" list="list-dosen2" placeholder="Pilih atau ketik…" autocomplete="off">
+            <datalist id="list-dosen2">
+              <option value="Dian Putrawangsa, S.T., M.T.">
+              <option value="Muhammad Rizky Al Bukhori">
+              <option value="Ahmad Fauzi">
+              <option value="Siti Rahmawati">
+            </datalist>
+          </div>
+          <div class="bap-field" style="margin-top:8px">
+            <label>Upload Tanda Tangan (opsional)</label>
+            <input type="file" id="f-sig-dosen-img" accept="image/*">
+          </div>
+          <div class="sig-preview" id="prev-sig-dosen">
+            <span class="sig-preview-placeholder">Preview tanda tangan</span>
+          </div>
+        </div>
+        <div class="sig-block">
+          <div class="sig-block-title">Sie Pendidikan</div>
+          <div class="bap-field">
+            <label>Nama</label>
+            <input type="text" id="f-sig-sie-nama" list="list-sie" placeholder="Pilih atau ketik…" autocomplete="off">
+            <datalist id="list-sie">
+              <option value="Muhammad Rizky Al Bukhori">
+              <option value="Ahmad Fauzi">
+              <option value="Siti Rahmawati">
+            </datalist>
+          </div>
+          <div class="bap-field" style="margin-top:8px">
+            <label>Upload Tanda Tangan (opsional)</label>
+            <input type="file" id="f-sig-sie-img" accept="image/*">
+          </div>
+          <div class="sig-preview" id="prev-sig-sie">
+            <span class="sig-preview-placeholder">Preview tanda tangan</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="bap-actions">
+      <button class="btn btn-reset" onclick="resetForm()">↺ Reset</button>
+      <button class="btn btn-primary" onclick="generateBAP()">📄 Generate BAP</button>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="bap-output-wrap" id="bap-output-wrap">
+    <div class="output-actions">
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="btn btn-reset" onclick="document.getElementById('bap-output-wrap').classList.remove('visible'); window.scrollTo(0,0);">✕ Tutup</button>
+    </div>
+    <div class="bap-doc" id="bap-doc">
+      <!-- rendered here -->
+    </div>
+    <div class="output-actions">
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // Auto calc tidak hadir
+  function calcTidakHadir() {
+    var tot = parseInt(document.getElementById('f-total').value) || 0;
+    var had = parseInt(document.getElementById('f-hadir').value) || 0;
+    document.getElementById('f-tidakhadir').value = (tot - had >= 0) ? (tot - had) : '';
+  }
+  document.getElementById('f-total').addEventListener('input', calcTidakHadir);
+  document.getElementById('f-hadir').addEventListener('input', calcTidakHadir);
+
+  // Signature image preview
+  function setupImgPreview(inputId, previewId) {
+    document.getElementById(inputId).addEventListener('change', function() {
+      var file = this.files[0];
+      var prev = document.getElementById(previewId);
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          prev.innerHTML = '<img src="' + e.target.result + '" alt="TTD">';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        prev.innerHTML = '<span class="sig-preview-placeholder">Preview tanda tangan</span>';
+      }
+    });
+  }
+  setupImgPreview('f-sig-dosen-img', 'prev-sig-dosen');
+  setupImgPreview('f-sig-sie-img', 'prev-sig-sie');
+
+  // HELPERS
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function showErr(id, show) {
+    var el = document.getElementById('err-' + id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    var months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    var days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    var d = new Date(dateStr);
+    return days[d.getDay()] + ', ' + parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1] + ' ' + parts[0];
+  }
+
+  function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function getImgSrc(inputId) {
+    var input = document.getElementById(inputId);
+    if (!input || !input.files || !input.files[0]) return null;
+    return null; // We'll handle via stored data URI
+  }
+
+  window.resetForm = function() {
+    var form = document.getElementById('bap-root');
+    var inputs = form.querySelectorAll('input:not([readonly]), select, textarea');
+    inputs.forEach(function(el) { el.value = ''; });
+    document.getElementById('f-kota').value = 'Padalarang';
+    document.getElementById('f-tidakhadir').value = '';
+    document.getElementById('prev-sig-dosen').innerHTML = '<span class="sig-preview-placeholder">Preview tanda tangan</span>';
+    document.getElementById('prev-sig-sie').innerHTML = '<span class="sig-preview-placeholder">Preview tanda tangan</span>';
+    document.getElementById('bap-output-wrap').classList.remove('visible');
+    ['tanggal','tahun','matkul','semester','dosen','total','hadir','penilaian','kehadiran','integritas','konsekuensi'].forEach(function(f){ showErr(f, false); });
+  };
+
+  // Decorative pattern SVG (same style as original doc)
+  function decoSVG() {
+    return '<svg viewBox="0 0 400 18" xmlns="http://www.w3.org/2000/svg">' +
+      Array.from({length: 20}, function(_, i) {
+        var x = i * 20;
+        var colors = ['#1a5fa8','#2d7dd2','#0e8c8c','#c8941a','#e8f1fb'];
+        var c = colors[i % colors.length];
+        return '<rect x="' + x + '" y="0" width="14" height="14" rx="3" fill="' + c + '" opacity="0.85"/>' +
+               '<circle cx="' + (x+16) + '" cy="16" r="2.5" fill="' + colors[(i+2)%colors.length] + '" opacity="0.6"/>';
+      }).join('') + '</svg>';
+  }
+
+  window.generateBAP = function() {
+    // Validation
+    var required = ['tanggal','tahun','matkul','semester','dosen','total','hadir','penilaian','kehadiran','integritas','konsekuensi'];
+    var fieldMap = {tanggal:'f-tanggal',tahun:'f-tahun',matkul:'f-matkul',semester:'f-semester',dosen:'f-dosen',total:'f-total',hadir:'f-hadir',penilaian:'f-penilaian',kehadiran:'f-kehadiran',integritas:'f-integritas',konsekuensi:'f-konsekuensi'};
+    var hasError = false;
+    required.forEach(function(f) {
+      var v = val(fieldMap[f]);
+      var empty = !v;
+      showErr(f, empty);
+      if (empty) hasError = true;
+    });
+    if (hasError) {
+      alert('Harap lengkapi semua field yang wajib diisi (*).');
+      return;
+    }
+
+    var tanggal = val('f-tanggal');
+    var tahun = val('f-tahun');
+    var matkul = val('f-matkul');
+    var semester = val('f-semester');
+    var dosen = val('f-dosen');
+    var total = val('f-total');
+    var hadir = val('f-hadir');
+    var tidakHadir = document.getElementById('f-tidakhadir').value || (parseInt(total) - parseInt(hadir));
+    var rps = val('f-rps');
+    var penilaian = val('f-penilaian');
+    var kehadiran = val('f-kehadiran');
+    var terlambat = val('f-terlambat') || '1';
+    var integritas = val('f-integritas');
+    var konsekuensi = val('f-konsekuensi');
+    var kota = val('f-kota') || 'Padalarang';
+    var tanggalTtd = val('f-tanggal-ttd') || tanggal;
+    var sigDosenNama = val('f-sig-dosen-nama') || dosen;
+    var sigSieNama = val('f-sig-sie-nama') || '—';
+
+    // Get stored sig images from preview
+    var dosenPrev = document.getElementById('prev-sig-dosen').querySelector('img');
+    var siePrev = document.getElementById('prev-sig-sie').querySelector('img');
+    var dosenImgHtml = dosenPrev ? '<img src="' + dosenPrev.src + '" alt="TTD Dosen" style="max-height:72px;max-width:160px;object-fit:contain;">' : '<div style="height:72px"></div>';
+    var sieImgHtml = siePrev ? '<img src="' + siePrev.src + '" alt="TTD Sie" style="max-height:72px;max-width:160px;object-fit:contain;">' : '<div style="height:72px"></div>';
+
+    var rpsHtml = rps ? '<a href="' + esc(rps) + '" style="color:#1a5fa8;word-break:break-all;">' + esc(rps) + '</a>' : '<em style="color:#999">Tidak diisi</em>';
+
+    var tanggalFormatted = formatDate(tanggal);
+    var tanggalTtdFormatted = formatDate(tanggalTtd) || tanggalFormatted;
+
+    var html = '' +
+      '<div class="doc-deco-top">' + decoSVG() + '</div>' +
+
+      '<div class="doc-header">' +
+        '<div class="doc-title">' +
+          '<h2>Berita Acara Pelaksanaan<br>Kontrak Perkuliahan</h2>' +
+          '<p>Program Studi Sarjana Bisnis Digital<br>Fakultas Ilmu Sosial dan Ekonomi Kreatif</p>' +
+        '</div>' +
+        '<div class="doc-logo">bd<span>BISNIS DIGITAL</span></div>' +
+      '</div>' +
+
+      '<hr class="doc-divider">' +
+
+      '<div class="doc-narasi">' +
+        'Pada hari ini <strong>' + esc(tanggalFormatted) + '</strong>, telah disusun Kontrak Perkuliahan untuk:' +
+      '</div>' +
+
+      '<table class="doc-table">' +
+        '<tr><td>Mata Kuliah</td><td><strong>' + esc(matkul) + '</strong></td></tr>' +
+        '<tr><td>Tahun Akademik</td><td>' + esc(tahun) + '</td></tr>' +
+        '<tr><td>Semester</td><td>' + esc(semester) + '</td></tr>' +
+        '<tr><td>Dosen Pengampu</td><td>' + esc(dosen) + '</td></tr>' +
+        '<tr><td>Jumlah Mahasiswa</td><td>' + esc(total) + '</td></tr>' +
+        '<tr><td>Jumlah Mahasiswa yang Hadir</td><td>' + esc(hadir) + '</td></tr>' +
+        '<tr><td>Jumlah Mahasiswa yang Tidak Hadir</td><td>' + esc(tidakHadir) + '</td></tr>' +
+      '</table>' +
+
+      '<div style="margin-bottom:8px;font-size:13px;font-weight:700;color:#1a5fa8;border-bottom:2px solid #e8f1fb;padding-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;">Adapun isi kontrak perkuliahan sebagai berikut:</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Rencana Pembelajaran Semester (RPS)</div>' +
+        '<div class="doc-section-content">' + rpsHtml + '</div>' +
+      '</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Penilaian</div>' +
+        '<div class="doc-section-content">' + esc(penilaian) + '</div>' +
+      '</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Kehadiran</div>' +
+        '<div class="doc-section-content">' + esc(kehadiran) + '</div>' +
+      '</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Keterlambatan</div>' +
+        '<div class="doc-section-content">' + esc(terlambat) + ' menit</div>' +
+      '</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Integritas</div>' +
+        '<div class="doc-section-content">' + esc(integritas) + '</div>' +
+      '</div>' +
+
+      '<div class="doc-section">' +
+        '<div class="doc-section-label">Konsekuensi Pelanggaran Kesepakatan</div>' +
+        '<div class="doc-section-content">' + esc(konsekuensi) + '</div>' +
+      '</div>' +
+
+      '<div class="doc-footer">' +
+        '<div class="doc-footer-meta">' +
+          'Dibuat di <strong>' + esc(kota) + '</strong><br>' +
+          'Tanggal: <strong>' + esc(tanggalTtdFormatted) + '</strong>' +
+        '</div>' +
+        '<div class="doc-sig-grid">' +
+          '<div class="doc-sig-col">' +
+            '<div class="doc-sig-role">Dosen Pengampu</div>' +
+            '<div class="doc-sig-image-box">' + dosenImgHtml + '</div>' +
+            '<div class="doc-sig-line"></div>' +
+            '<div class="doc-sig-name">' + esc(sigDosenNama) + '</div>' +
+          '</div>' +
+          '<div class="doc-sig-col">' +
+            '<div class="doc-sig-role">Sie Pendidikan</div>' +
+            '<div class="doc-sig-image-box">' + sieImgHtml + '</div>' +
+            '<div class="doc-sig-line"></div>' +
+            '<div class="doc-sig-name">' + esc(sigSieNama) + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="doc-deco-bottom">' + decoSVG() + '</div>';
+
+    document.getElementById('bap-doc').innerHTML = html;
+    var wrap = document.getElementById('bap-output-wrap');
+    wrap.classList.add('visible');
+    setTimeout(function() {
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+})();
+</script>
